@@ -23,4 +23,14 @@ Before you begin, make sure you have the following installed on your machine:
    ```bash
    cd swot-analysis-generator
 
-3. 
+3. Install the project dependencies:
+
+   ```bash
+   npm install
+
+4. Create a .env file in the root of the project and add your OpenAI API key:
+
+   ```bash
+   OPEN_API=your_openai_api_key_here
+
+Replace `your_openai_api_key_here` with your actual OpenAI API key.
