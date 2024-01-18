@@ -17,3 +17,10 @@ Before you begin, make sure you have the following installed on your machine:
 
    ```bash
    git clone https://github.com/your-username/swot-analysis-generator.git
+
+2. Change into the project directory:
+
+   ```bash
+   cd swot-analysis-generator
+
+3. 
