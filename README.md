@@ -47,3 +47,6 @@ The application will run on http://localhost:3000 by default.
 2. Open your web browser and navigate to http://localhost:3000.
 
 3. Enter the text in the provided form and click "Submit" to generate the SWOT analysis.
+
+## Acknowledgments
+`OpenAI` for providing the `GPT-3.5-turbo` model used in this project.
