@@ -34,3 +34,16 @@ Before you begin, make sure you have the following installed on your machine:
    OPEN_API=your_openai_api_key_here
 
 Replace `your_openai_api_key_here` with your actual OpenAI API key.
+
+### Usage
+
+1. Start the application:
+
+   ```bash
+   npm start
+
+The application will run on http://localhost:3000 by default.
+
+2. Open your web browser and navigate to http://localhost:3000.
+
+3. Enter the text in the provided form and click "Submit" to generate the SWOT analysis.
