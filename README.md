@@ -1,52 +1,78 @@
 # SWOT Analysis Generator
 
-This project is a simple web application that generates a SWOT (Strengths, Weaknesses, Opportunities, Threats) analysis based on user input. The application uses the OpenAI GPT-3.5-turbo model to generate the analysis.
+A small Node.js web app that turns a short business description into a SWOT (Strengths, Weaknesses, Opportunities, Threats) analysis. The description is sent to the OpenAI Chat Completions API, and the result comes back as a styled HTML page.
+
+## Features
+
+- Simple form where you paste a description of a company or business idea
+- Prompt that asks the model to fill a fixed HTML template with strengths, weaknesses, opportunities and threats
+- Returns the analysis as a dark-themed HTML card in the browser
+- API key, model and port are read from environment variables
+
+## Tech Stack
+
+- Node.js
+- Express
+- Axios
+- dotenv
+- OpenAI Chat Completions API (`gpt-3.5-turbo` by default)
+
+## Project Structure
+
+```
+.
+├── index.js       # Express server, prompt template and OpenAI request
+├── package.json
+├── .env.example   # Environment variables to copy into .env
+└── LICENSE
+```
 
 ## Getting Started
 
 ### Prerequisites
 
-Before you begin, make sure you have the following installed on your machine:
-
-- **Node.js:** [Download and install Node.js](https://nodejs.org/)
-- **npm:** npm is included with Node.js, so no need to install separately.
+- Node.js and npm
+- An OpenAI API key
 
 ### Installation
 
-1. Clone the repository to your local machine:
+```bash
+git clone https://github.com/Hamza-Tahirr/SWOT-Analysis.git
+cd SWOT-Analysis
+npm install
+```
 
-   ```bash
-   git clone https://github.com/your-username/swot-analysis-generator.git
+Copy the example environment file and add your key:
 
-2. Change into the project directory:
+```bash
+cp .env.example .env
+```
 
-   ```bash
-   cd swot-analysis-generator
+| Variable         | Required | Default         | Description                  |
+| ---------------- | -------- | --------------- | ---------------------------- |
+| `OPENAI_API_KEY` | Yes      |                 | Your OpenAI API key          |
+| `OPENAI_MODEL`   | No       | `gpt-3.5-turbo` | Chat model used for the call |
+| `PORT`           | No       | `3000`          | Port the server listens on   |
 
-3. Install the project dependencies:
+### Run
 
-   ```bash
-   npm install
+```bash
+npm start
+```
 
-4. Create a .env file in the root of the project and add your OpenAI API key:
+Open http://localhost:3000, enter a business description and click **Submit**.
 
-   ```bash
-   OPEN_API=your_openai_api_key_here
+### Example input
 
-Replace `your_openai_api_key_here` with your actual OpenAI API key.
+> ABC Supply Chain Inc. is a global logistics company that provides end-to-end supply chain solutions to businesses of all sizes. Its core services include transportation, warehousing, inventory management and distribution, along with customs brokerage, packaging and labeling. The company has grown steadily, but the industry is becoming more competitive as new players enter the market and existing competitors expand their offerings.
 
-### Usage
+## How It Works
 
-1. Start the application:
+1. `GET /` serves the input form.
+2. `POST /` builds a prompt from the submitted text and an HTML template for the SWOT card.
+3. The prompt is sent to the OpenAI Chat Completions endpoint.
+4. The HTML returned by the model is sent back to the browser.
 
-   ```bash
-   npm start
+## License
 
-The application will run on http://localhost:3000 by default.
-
-2. Open your web browser and navigate to http://localhost:3000.
-
-3. Enter the text in the provided form and click "Submit" to generate the SWOT analysis.
-
-## Acknowledgments
-`OpenAI` for providing the `GPT-3.5-turbo` model used in this project.
+This project is licensed under the MIT License. See [LICENSE](LICENSE) for details.
