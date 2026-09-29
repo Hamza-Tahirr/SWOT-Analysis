@@ -3,29 +3,19 @@ const express = require('express');
 require('dotenv').config();
 
 const app = express();
-const port = 3000;
+const port = process.env.PORT || 3000;
 
-// Middleware to parse JSON and URL-encoded request bodies
-//app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-const OPENAI_API_KEY = process.env.OPEN_API;
+const OPENAI_API_KEY = process.env.OPENAI_API_KEY;
+const OPENAI_MODEL = process.env.OPENAI_MODEL || 'gpt-3.5-turbo';
 
-app.get('/', (req, res) => {
-  res.send(`
-    <form action="/" method="POST">
-      <label for="input">Enter the text over here: </label>
-      <input type="text" name="input" id="input">
-      <button type="submit">Submit</button>
-    </form>
-  `);
-});
+if (!OPENAI_API_KEY) {
+  console.error('OPENAI_API_KEY is not set. Copy .env.example to .env and add your key.');
+  process.exit(1);
+}
 
-app.post('/', (req, res) => {
-  console.log(req.body.input);
-      
-const inputText = `ABC Supply Chain Inc. is a global logistics company that specializes in providing end-to-end supply chain solutions to businesses of all sizes. The company has a strong presence in several countries and has built a reputation for its reliability, efficiency, and cost-effectiveness. ABC Supply Chain's core services include transportation, warehousing, inventory management, and distribution. The company also offers value-added services such as customs brokerage, packaging, and labeling. ABC Supply Chain has experienced steady growth over the years, but the industry is becoming increasingly competitive, with new players entering the market and existing competitors expanding their offerings. The company's management team is concerned about maintaining its competitive edge and identifying new opportunities for growth in a rapidly evolving industry`
-const textBeforeInput = `Use the Below information to Generate a SWOT Analysis and output in the following format`
+const textBeforeInput = `Use the below information to generate a SWOT analysis and output it in the following format:`;
 const textAfterInput = `
 <!DOCTYPE html>
 <html lang="en">
@@ -117,31 +107,47 @@ const textAfterInput = `
 
 </body>
 </html>
-
-
 `;
 
+app.get('/', (req, res) => {
+  res.send(`
+    <form action="/" method="POST">
+      <label for="input">Describe the business: </label><br>
+      <textarea name="input" id="input" rows="8" cols="60" required></textarea><br>
+      <button type="submit">Submit</button>
+    </form>
+  `);
+});
 
-const requestData = {
-  model: 'gpt-3.5-turbo',
-  messages: [{ role: 'user', content: `${textBeforeInput}\nn${inputText}\nn${textAfterInput}` }],
-  temperature: 0.7
-};
-
-axios.post('https://api.openai.com/v1/chat/completions', requestData, {
-  headers: {
-    'Content-Type': 'application/json',
-    'Authorization': `Bearer ${OPENAI_API_KEY}`
+app.post('/', async (req, res) => {
+  const inputText = (req.body.input || '').trim();
+  if (!inputText) {
+    return res.status(400).send('Please enter a business description. <a href="/">Go back</a>');
   }
-})
-  .then(response => {
-    console.log(response.data.choices[0].message.content);
-    res.send(response.data.choices[0].message.content);
-  })
-  .catch(error => {
-    console.error(error);
-  });
-;
+
+  const requestData = {
+    model: OPENAI_MODEL,
+    messages: [{ role: 'user', content: `${textBeforeInput}\n\n${inputText}\n\n${textAfterInput}` }],
+    temperature: 0.7
+  };
+
+  try {
+    const response = await axios.post('https://api.openai.com/v1/chat/completions', requestData, {
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${OPENAI_API_KEY}`
+      }
+    });
+
+    // The model often wraps the returned HTML in a markdown code fence
+    const html = response.data.choices[0].message.content
+      .replace(/^\s*```(?:html)?\s*/i, '')
+      .replace(/\s*```\s*$/, '');
+    res.send(html);
+  } catch (error) {
+    console.error(error.response ? error.response.data : error.message);
+    res.status(502).send('Could not generate the SWOT analysis. Check the server log for details. <a href="/">Go back</a>');
+  }
 });
 
 app.listen(port, () => {
